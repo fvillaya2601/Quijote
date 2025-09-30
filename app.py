@@ -56,10 +56,10 @@ if st.button("Responder"):
     st.write(out)
 
 st.header("4) Resumen")
-if st.button("Generar resumen con LLaMA 3"):
+if st.button("Generar resumen"):
     text = TXT_PATH.read_text(encoding="utf-8")[:2000]
     prompt = f"Resume en 2 líneas el siguiente pasaje del Quijote:\n\n{text}"
-    out = ask_llama3(prompt, 120)
+    out = ask_llama3(prompt, 220)
     st.write(out)
 
 
