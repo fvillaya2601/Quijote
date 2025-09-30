@@ -33,7 +33,7 @@ if SENTCSV.exists():
 def ask_llama3(prompt, max_tokens=200):
     try:
         response = client.chat.completions.create(
-            model="llama3-8b-8192",  # o "llama3-70b-8192" si quieres más potente
+            model="llama-3.3-70b-versatile",  # o "llama3-70b-8192" si quieres más potente
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens
         )
