@@ -11,14 +11,10 @@ ROOT = Path(__file__).parent
 TXT_PATH = ROOT / "don_quijote.txt"
 SENTCSV = ROOT / "labeled_sentences.csv"
 
-st.title("Don Quijote — NLP con Qwen-7B")
+st.title("Don Quijote — NLP con Qwen-7B (trust_remote_code)")
 st.markdown("""
 Esta demo usa el modelo **Qwen-7B** desde Hugging Face (requiere `HF_TOKEN`).  
-Tareas disponibles:
-- Clasificación de frases (dataset etiquetado de ejemplo).
-- Completado de oraciones.
-- QA extractivo/generativo.
-- Resumen.
+Se agregó `trust_remote_code=True` para permitir cargar el código personalizado del modelo.  
 """)
 
 # Load dataset
@@ -34,9 +30,27 @@ qa_model = None
 summarizer = None
 if hf_token:
     try:
-        generator = pipeline("text-generation", model="Qwen/Qwen-7B", use_auth_token=hf_token, device_map="auto")
-        qa_model = pipeline("question-answering", model="Qwen/Qwen-7B", use_auth_token=hf_token, device_map="auto")
-        summarizer = pipeline("summarization", model="Qwen/Qwen-7B", use_auth_token=hf_token, device_map="auto")
+        generator = pipeline(
+            "text-generation",
+            model="Qwen/Qwen-7B",
+            use_auth_token=hf_token,
+            device_map="auto",
+            trust_remote_code=True
+        )
+        qa_model = pipeline(
+            "question-answering",
+            model="Qwen/Qwen-7B",
+            use_auth_token=hf_token,
+            device_map="auto",
+            trust_remote_code=True
+        )
+        summarizer = pipeline(
+            "summarization",
+            model="Qwen/Qwen-7B",
+            use_auth_token=hf_token,
+            device_map="auto",
+            trust_remote_code=True
+        )
         st.success("Modelos Qwen-7B cargados correctamente.")
     except Exception as e:
         st.error(f"No se pudo cargar Qwen-7B: {e}")
