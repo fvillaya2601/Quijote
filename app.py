@@ -8,7 +8,7 @@ st.set_page_config(page_title="Don Quijote con LLaMA 3 (Groq)", layout="wide")
 
 ROOT = Path(__file__).parent
 TXT_PATH = ROOT / "don_quijote.txt"
-SENTCSV = ROOT / "don_quijote.txt"
+SENTCSV = ROOT / "labeled_sentences.csvt"
 
 st.title("Don Quijote — NLP con LLaMA 3 (Groq)")
 
