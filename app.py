@@ -18,7 +18,7 @@ if not api_key:
     st.error("⚠️ No se encontró GROQ_API_KEY. Configúralo en tu entorno o en Streamlit Cloud.")
 else:
     client = Groq(api_key=api_key)
-    st.success("✅ Conectado a Groq con LLaMA 3")
+    st.success("Conectado a Groq con LLaMA 3")
 
 # Dataset
 if SENTCSV.exists():
@@ -43,13 +43,13 @@ def ask_llama3(prompt, max_tokens=200):
 
 st.header("2) Completado de oraciones")
 seed = st.text_area("Escribe un comienzo", value="En un lugar de la Mancha,")
-if st.button("Generar continuación con LLaMA 3"):
+if st.button("Generar continuación"):
     out = ask_llama3(f"Continúa el siguiente texto del Quijote: {seed}", 150)
     st.write(out)
 
 st.header("3) QA (pregunta-respuesta)")
 q = st.text_input("Pregunta", value="¿Qué le pide Don Quijote a Sancho antes de la ínsula?")
-if st.button("Responder con LLaMA 3"):
+if st.button("Responder"):
     context = TXT_PATH.read_text(encoding="utf-8")[:2000]
     prompt = f"Usa este contexto del Quijote para responder:\n{context}\n\nPregunta: {q}\nRespuesta:"
     out = ask_llama3(prompt, 250)
