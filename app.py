@@ -48,7 +48,7 @@ if st.button("Generar continuación"):
     st.write(out)
 
 st.header("3) QA (pregunta-respuesta)")
-q = st.text_input("Pregunta", value="¿Qué le pide Don Quijote a Sancho antes de la ínsula?")
+q = st.text_input("Pregunta", value="¿Quién es Don Quijote?")
 if st.button("Responder"):
     context = TXT_PATH.read_text(encoding="utf-8")[:6000]
     prompt = f"Usa este contexto del Quijote para responder:\n{context}\n\nPregunta: {q}\nRespuesta:"
