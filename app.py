@@ -1,28 +1,26 @@
 import os
 import streamlit as st
-from openai import OpenAI
+from groq import Groq
 import pandas as pd
 from pathlib import Path
 
-st.set_page_config(page_title="Don Quijote con GPT", layout="wide")
+st.set_page_config(page_title="Don Quijote con LLaMA 3 (Groq)", layout="wide")
 
 ROOT = Path(__file__).parent
 TXT_PATH = ROOT / "don_quijote.txt"
 SENTCSV = ROOT / "labeled_sentences.csv"
 
-st.title("Don Quijote — NLP con GPT-3.5")
-st.markdown("""
-Esta demo usa **GPT-3.5-Turbo** a través de la API de OpenAI.  
-Necesitas configurar tu variable de entorno `OPENAI_API_KEY`.  
-""")
+st.title("Don Quijote — NLP con LLaMA 3 (Groq)")
 
-client = None
-if os.getenv("OPENAI_API_KEY"):
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    st.success("API Key encontrada, listo para usar GPT-3.5-Turbo")
+# Configurar cliente Groq
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    st.error("⚠️ No se encontró GROQ_API_KEY. Configúralo en tu entorno o en Streamlit Cloud.")
 else:
-    st.error("No se encontró la variable de entorno OPENAI_API_KEY")
+    client = Groq(api_key=api_key)
+    st.success("✅ Conectado a Groq con LLaMA 3")
 
+# Dataset
 if SENTCSV.exists():
     df = pd.read_csv(SENTCSV)
     st.sidebar.header("Ejemplos etiquetados")
@@ -32,39 +30,36 @@ st.header("1) Clasificación de frases (ejemplo)")
 if SENTCSV.exists():
     st.table(df.sample(min(5, len(df))))
 
+def ask_llama3(prompt, max_tokens=200):
+    try:
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",  # o "llama3-70b-8192" si quieres más potente
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error: {e}"
+
 st.header("2) Completado de oraciones")
 seed = st.text_area("Escribe un comienzo", value="En un lugar de la Mancha,")
-if st.button("Generar continuación con GPT"):
-    if client:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": f"Continúa el siguiente texto del Quijote: {seed}"}],
-            max_tokens=200
-        )
-        st.write(response.choices[0].message.content)
+if st.button("Generar continuación con LLaMA 3"):
+    out = ask_llama3(f"Continúa el siguiente texto del Quijote: {seed}", 150)
+    st.write(out)
 
 st.header("3) QA (pregunta-respuesta)")
 q = st.text_input("Pregunta", value="¿Qué le pide Don Quijote a Sancho antes de la ínsula?")
-if st.button("Responder con GPT"):
-    if client:
-        context = TXT_PATH.read_text(encoding="utf-8")[:2000]
-        prompt = f"Usa este contexto del Quijote para responder:\n{context}\n\nPregunta: {q}\nRespuesta:"
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=250
-        )
-        st.write(response.choices[0].message.content)
+if st.button("Responder con LLaMA 3"):
+    context = TXT_PATH.read_text(encoding="utf-8")[:2000]
+    prompt = f"Usa este contexto del Quijote para responder:\n{context}\n\nPregunta: {q}\nRespuesta:"
+    out = ask_llama3(prompt, 250)
+    st.write(out)
 
 st.header("4) Resumen")
-if st.button("Generar resumen con GPT"):
-    if client:
-        text = TXT_PATH.read_text(encoding="utf-8")[:2000]
-        prompt = f"Resume en 2 líneas el siguiente pasaje del Quijote:\n\n{text}"
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150
-        )
-        st.write(response.choices[0].message.content)
+if st.button("Generar resumen con LLaMA 3"):
+    text = TXT_PATH.read_text(encoding="utf-8")[:2000]
+    prompt = f"Resume en 2 líneas el siguiente pasaje del Quijote:\n\n{text}"
+    out = ask_llama3(prompt, 120)
+    st.write(out)
+
 
