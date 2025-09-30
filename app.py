@@ -15,7 +15,7 @@ st.title("Don Quijote — NLP con LLaMA 3 (Groq)")
 # Configurar cliente Groq
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
-    st.error("⚠️ No se encontró GROQ_API_KEY. Configúralo en tu entorno o en Streamlit Cloud.")
+    st.error("No se encontró GROQ_API_KEY")
 else:
     client = Groq(api_key=api_key)
     st.success("Conectado a Groq con LLaMA 3")
@@ -33,7 +33,7 @@ if SENTCSV.exists():
 def ask_llama3(prompt, max_tokens=200):
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",  # o "llama3-70b-8192" si quieres más potente
+            model="llama-3.3-70b-versatile",  
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens
         )
@@ -57,7 +57,7 @@ if st.button("Responder"):
 
 st.header("4) Resumen")
 if st.button("Generar resumen"):
-    text = TXT_PATH.read_text(encoding="utf-8")[:2000]
+    text = TXT_PATH.read_text(encoding="utf-8")[:6000]
     prompt = f"Resume en 2 líneas el siguiente pasaje del Quijote:\n\n{text}"
     out = ask_llama3(prompt, 220)
     st.write(out)
